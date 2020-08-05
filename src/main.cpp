@@ -1,28 +1,36 @@
 #include <cstdlib>
 #include <string>
+#include <vector>
+
+#include <thread_pool.hpp>
+
+using namespace std;
 
 int main(int argc, char **argv) {
-  size_t mThreadsNum { 6 };
-  size_t rThreadsNum { 6 };
-  string filename { "big_set.txt" }
+  size_t mapThreadsNum { 6 };
+  size_t reduceThreadsNum { 6 };
+  string filename { "big_set.txt" };
 
-  auto [blockSize, entries] { splitFile(filename, mThreadsNum };
+  auto [blockSize, entries] { splitFile(filename, mapThreadsNum) };
 
-  ThreadPool mapThreads { };
+  ThreadPool mapThreads { mapThreads };
+  vector<Mapper> mappers { };
+  mappers.reserve(mapThreadsNum);
 
   for (auto entry: entries) {
-    mapThread.run(Mapper(entry, blockSize));
+    mappers.emplace_back(filename, entry, blockSize);
+    mapThread.run(mappers.back().map());
   }
 
   mapThreads.join();
 
-  ThreadPool shuffleThreads { } 
+  ThreadPool shuffleThreads { mapThreadsNum };
 
   // TODO run shuffle
 
   shuffleThreads.join();
 
-  ThreadPool reduceThreads { };
+  ThreadPool reduceThreads { reduceThreadsNum };
 
   // TODO run reduce
 
