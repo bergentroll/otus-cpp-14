@@ -40,9 +40,10 @@ find_package(Threads REQUIRED)
 add_executable(
   ${CMAKE_PROJECT_NAME}
   ${SRC_PATH}/main.cpp)
-#target_link_libraries(
-#  ${CMAKE_PROJECT_NAME}
-#  ${CMAKE_PROJECT_NAME}-obj)
+target_link_libraries(
+  ${CMAKE_PROJECT_NAME}
+#  ${CMAKE_PROJECT_NAME}-obj
+  ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
 ### Tests #####################################################################
 
