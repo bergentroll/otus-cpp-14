@@ -1,40 +1,52 @@
 #include <cstdlib>
 #include <string>
+#include <iostream>
 #include <vector>
 
-#include <thread_pool.hpp>
+#include "thread_pool.hpp"
+#include "file_marker.hpp"
 
 using namespace std;
+using namespace otus;
 
 int main(int argc, char **argv) {
   size_t mapThreadsNum { 6 };
   size_t reduceThreadsNum { 6 };
-  string filename { "big_set.txt" };
+  string filename { "../big_set.txt" };
 
-  auto [blockSize, entries] { splitFile(filename, mapThreadsNum) };
-
-  ThreadPool mapThreads { mapThreads };
-  vector<Mapper> mappers { };
-  mappers.reserve(mapThreadsNum);
-
-  for (auto entry: entries) {
-    mappers.emplace_back(filename, entry, blockSize);
-    mapThread.run(mappers.back().map());
+  try {
+    FileMarker marker { filename };
+    marker.mark(filename);
+  }
+  catch (FileMarker::FailedToReadFile const &e) {
+    std::cerr << "Error: " << e.what() << endl;
+    return EXIT_FAILURE;
   }
 
-  mapThreads.join();
+  //auto [blockSize, entries] { splitFile(filename, mapThreadsNum) };
 
-  ThreadPool shuffleThreads { mapThreadsNum };
+  //ThreadPool mapThreads { mapThreads };
+  //vector<Mapper> mappers { };
+  //mappers.reserve(mapThreadsNum);
 
-  // TODO run shuffle
+  //for (auto entry: entries) {
+  //  mappers.emplace_back(filename, entry, blockSize);
+  //  mapThread.run(mappers.back().map());
+  //}
 
-  shuffleThreads.join();
+  //mapThreads.join();
 
-  ThreadPool reduceThreads { reduceThreadsNum };
+  //ThreadPool shuffleThreads { mapThreadsNum };
 
-  // TODO run reduce
+  //// TODO run shuffle
 
-  reduceThreads.join();
+  //shuffleThreads.join();
+
+  //ThreadPool reduceThreads { reduceThreadsNum };
+
+  //// TODO run reduce
+
+  //reduceThreads.join();
 
   return EXIT_SUCCESS;
 }
