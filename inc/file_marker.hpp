@@ -8,7 +8,6 @@
 
 #include <iostream>
 
-// Attribution to https://stackoverflow.com/a/3072840/7486328.
 namespace otus {
   class FileMarker {
   public:
@@ -26,33 +25,44 @@ namespace otus {
       if (!file.is_open())
         throw FailedToReadFile("failed to read file \"" + filename + '"');
 
-      /// TODO Test on badness
-      linesNum = std::count_if(
+      /// TODO Test on badness.
+      std::for_each(
           std::istreambuf_iterator<char>(file),
           std::istreambuf_iterator<char>(),
           [this, &file](char ch) {
-            if (ch == '\n') {
-              eols.push_back(file.tellg());
-              return true;
-            }
-            return false;
+            if (ch == '\n') eols.push_back(file.tellg());
           });
     }
 
-    /// TODO Vector of pairs
+    /** @brief Get positions of last \n in blocks.
+     *
+     * TODO Vector of pairs
+     */
     std::vector<PosType> mark(size_t blocksNum) {
-      //std::cerr << linesNum << std::endl;
-      //for (auto i: eols) {
-      //  std::cerr << i << ", ";
-      //}
-      //std::cerr << std::endl;
-
       std::vector<PosType> result { };
+      result.reserve(blocksNum);
+
+      auto blockSize { eols.size() / blocksNum };
+      auto remainder { eols.size() % blocksNum };
+
+      size_t shift { 0 };
+
+      for (size_t i { }; i < blocksNum; ++i) {
+        // To spread remains to blocks.
+        if (remainder > 0) {
+          --remainder;
+          ++shift;
+        }
+
+        auto mark { eols[(i + 1) * blockSize + shift - 1] };
+
+        result.push_back(mark);
+      }
+
       return result;
     }
 
     private:
     std::vector<PosType> eols { };
-    uint_least32_t linesNum;
   };
 }

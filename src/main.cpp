@@ -12,18 +12,19 @@ using namespace otus;
 int main(int argc, char **argv) {
   size_t mapThreadsNum { 6 };
   size_t reduceThreadsNum { 6 };
-  string filename { "../big_set.txt" };
+  string filename { "../small_steady_set.txt" };
+
+  std::vector<FileMarker::PosType> marks { };
+  marks.reserve(mapThreadsNum);
 
   try {
     FileMarker marker { filename };
-    marker.mark(filename);
+    marks = marker.mark(mapThreadsNum);
   }
   catch (FileMarker::FailedToReadFile const &e) {
     std::cerr << "Error: " << e.what() << endl;
     return EXIT_FAILURE;
   }
-
-  //auto [blockSize, entries] { splitFile(filename, mapThreadsNum) };
 
   //ThreadPool mapThreads { mapThreads };
   //vector<Mapper> mappers { };
