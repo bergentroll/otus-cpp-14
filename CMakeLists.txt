@@ -51,7 +51,7 @@ if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   target_link_libraries(
     test-suite
     PRIVATE
-    ${CMAKE_PROJECT_NAME}-obj
+    #${CMAKE_PROJECT_NAME}-obj
     Boost::unit_test_framework)
   add_test(test-suite test-suite)
 else()

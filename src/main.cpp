@@ -10,7 +10,7 @@ using namespace std;
 using namespace otus;
 
 int main(int argc, char **argv) {
-  size_t mapThreadsNum { 6 };
+  size_t mapThreadsNum { 30 };
   size_t reduceThreadsNum { 6 };
   string filename { "../small_steady_set.txt" };
 
@@ -25,6 +25,8 @@ int main(int argc, char **argv) {
     std::cerr << "Error: " << e.what() << endl;
     return EXIT_FAILURE;
   }
+
+  for (auto i: marks) cerr << i << std::endl;
 
   //ThreadPool mapThreads { mapThreads };
   //vector<Mapper> mappers { };
