@@ -32,6 +32,8 @@ namespace otus {
           [this, &file](char ch) {
             if (ch == '\n') eols.push_back(file.tellg());
           });
+
+      file.close();
     }
 
     /** @brief Get positions of last \n in blocks.
