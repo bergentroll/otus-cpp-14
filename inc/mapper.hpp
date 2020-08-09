@@ -21,7 +21,7 @@ namespace otus {
       }
     }
 
-    void Run() {
+    void run() {
       std::string s { };
       file >> s;
       //std::cerr << s << std::endl;

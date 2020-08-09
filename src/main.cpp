@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
 
   for (auto i: marks) cerr << i << std::endl;
 
-  ThreadPool<function<void()>> mapThreads { mapThreadsNum };
+  ThreadPool<decltype(&Mapper::run), Mapper*> mapThreads { mapThreadsNum };
   vector<Mapper> mappers { };
   mappers.reserve(mapThreadsNum);
 
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
   for (auto end: marks) {
     mappers.emplace_back(filename, begin, end);
     Mapper &mapper { mappers.back() };
-    mapThreads.run([&mapper]() { mapper.Run(); });
+    mapThreads.run(&Mapper::run, &mapper);
     begin = end + PosType(1);
   }
 
