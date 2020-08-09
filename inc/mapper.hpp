@@ -5,17 +5,25 @@
 
 #include <iostream>
 
-namespace otus {
-  using PosType = std::ifstream::pos_type;
+#include "aliases.hpp"
 
+namespace otus {
   class Mapper {
   public:
-    Mapper(std::string const &filename, PosType begin, PosType end) { }
+    Mapper(std::string const &filename, PosType begin, PosType end):
+    file(filename) {
+      // TODO Errors handling.
+      file.seekg(begin);
+      //std::cerr << begin << ": " << end << std:: endl;
+    }
 
     void Run() {
-      std::cerr << "OLOLO\n";
+      std::string s { };
+      file >> s;
+      std::cerr << s << std::endl;
     }
 
   private:
+    std::ifstream file;
   };
 }

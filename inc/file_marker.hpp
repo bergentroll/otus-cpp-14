@@ -6,13 +6,11 @@
 #include <stdexcept>
 #include <vector>
 
-#include <iostream>
+#include "aliases.hpp"
 
 namespace otus {
   class FileMarker {
   public:
-    using PosType = std::ifstream::pos_type;
-
     class FailedToReadFile: public std::runtime_error {
     public:
       FailedToReadFile(std::string const &message):
