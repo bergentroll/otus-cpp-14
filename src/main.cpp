@@ -1,12 +1,14 @@
 #include <boost/program_options.hpp>
 #include <boost/serialization/strong_typedef.hpp>
 #include <cstdlib>
+#include <functional>
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "thread_pool.hpp"
 #include "file_marker.hpp"
+#include "mapper.hpp"
+#include "thread_pool.hpp"
 
 using namespace std;
 using namespace otus;
@@ -65,7 +67,6 @@ int main(int argc, char **argv) {
     mapThreadsNum = options["mnum"].as<ThreadsNum>();
     reduceThreadsNum = options["rnum"].as<ThreadsNum>();
 
-    cerr << "OLOLO has been set to " << mapThreadsNum << endl;
   } catch (po::error const &e) {
     cerr << "Options error: " << e.what() << endl;
     return EXIT_FAILURE;
@@ -85,16 +86,18 @@ int main(int argc, char **argv) {
 
   for (auto i: marks) cerr << i << std::endl;
 
-  //ThreadPool mapThreads { mapThreads };
-  //vector<Mapper> mappers { };
-  //mappers.reserve(mapThreadsNum);
+  ThreadPool<function<void()>> mapThreads { mapThreadsNum };
+  vector<Mapper> mappers { };
+  mappers.reserve(mapThreadsNum);
 
-  //for (auto entry: entries) {
-  //  mappers.emplace_back(filename, entry, blockSize);
-  //  mapThread.run(mappers.back().map());
-  //}
+  FileMarker::PosType prevEntry { 0 };
+  for (auto entry: marks) {
+    mappers.emplace_back(filename, prevEntry, entry);
+    Mapper &mapper { mappers.back() };
+    mapThreads.run([&mapper]() { mapper.Run(); });
+  }
 
-  //mapThreads.join();
+  mapThreads.join();
 
   //ThreadPool shuffleThreads { mapThreadsNum };
 
