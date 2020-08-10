@@ -100,6 +100,20 @@ int main(int argc, char **argv) {
 
   mapThreads.join();
 
+  for (auto &mapper: mappers) {
+    auto mapped { mapper.getResult() };
+    for (auto i: mapped) {
+      for (auto j: i.second) {
+        cout << i.first << ": ";
+        for (auto k: j) {
+          std::cout << k << ' ';
+        }
+        std::cout << std::endl;
+      }
+      std::cout << std::endl;
+    }
+  }
+
   //ThreadPool shuffleThreads { mapThreadsNum };
 
   //// TODO run shuffle

@@ -1,17 +1,17 @@
 #pragma once
 
+#include <algorithm>
 #include <fstream>
 #include <string>
+#include <utility>
 #include <vector>
-
-#include <iostream>
 
 #include "aliases.hpp"
 
 namespace otus {
   class Mapper {
   public:
-    using MappingResult = std::vector<std::string>;
+    using MappingResult = std::pair<std::string, std::vector<std::string>>;
 
     Mapper(std::string const &filename, PosType begin, PosType end):
     file(filename) {
@@ -21,12 +21,15 @@ namespace otus {
       while (file.tellg() <= end && std::getline(file, line)) {
         tokens.push_back(line);
       }
-      result.reserve(tokens.size());
     }
 
     void run() {
+      std::sort(tokens.begin(), tokens.end());
+
+      result.reserve(tokens.size());
+
       for (auto const &token: tokens)
-        result.push_back(process(token));
+        result.push_back(std::make_pair(token, process(token)));
     }
 
     std::vector<MappingResult>& getResult() { return result; }
@@ -37,8 +40,8 @@ namespace otus {
     std::vector<std::string> tokens { };
     std::vector<MappingResult> result { };
 
-    static inline MappingResult process(std::string const &item) {
-      MappingResult result { };
+    static inline std::vector<std::string> process(std::string const &item) {
+      std::vector<std::string> result { };
       result.reserve(item.length());
 
       std::string buf { };
