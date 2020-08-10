@@ -8,6 +8,7 @@
 
 #include "file_marker.hpp"
 #include "mapper.hpp"
+#include "reducer.hpp"
 #include "thread_pool.hpp"
 
 using namespace std;
@@ -100,31 +101,25 @@ int main(int argc, char **argv) {
 
   mapThreads.join();
 
-  for (auto &mapper: mappers) {
-    auto mapped { mapper.getResult() };
-    for (auto i: mapped) {
-      for (auto j: i.second) {
-        cout << i.first << ": ";
-        for (auto k: j) {
-          std::cout << k << ' ';
-        }
-        std::cout << std::endl;
-      }
-      std::cout << std::endl;
-    }
-  }
-
   //ThreadPool shuffleThreads { mapThreadsNum };
 
   //// TODO run shuffle
 
   //shuffleThreads.join();
 
-  //ThreadPool reduceThreads { reduceThreadsNum };
+  /// TODO
+  reduceThreadsNum = mapThreadsNum;
+  ThreadPool<decltype(&Reducer::run), Reducer*> reduceThreads { reduceThreadsNum };
+  vector<Reducer> reducers { };
+  reducers.reserve(reduceThreadsNum);
 
-  //// TODO run reduce
+  for (auto &item: mappers) {
+    reducers.emplace_back(item.getResult());
+    Reducer &reducer { reducers.back() };
+    reduceThreads.run(&Reducer::run, &reducer);
+  }
 
-  //reduceThreads.join();
+  reduceThreads.join();
 
   return EXIT_SUCCESS;
 }
