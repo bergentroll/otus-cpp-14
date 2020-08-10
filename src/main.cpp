@@ -113,6 +113,7 @@ int main(int argc, char **argv) {
   vector<Reducer> reducers { };
   reducers.reserve(reduceThreadsNum);
 
+  /// TODO It seems it can be generalized.
   for (auto &item: mappers) {
     reducers.emplace_back(item.getResult());
     Reducer &reducer { reducers.back() };
