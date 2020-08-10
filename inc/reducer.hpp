@@ -13,27 +13,38 @@ namespace otus {
     Reducer (std::vector<ItemType> const &data):
       data(data) { }
 
-    // TODO Duplicates
     void run() const {
       size_t globalIndex { };
 
       for (std::vector<ItemType>::size_type i { }; i < data.size() - 1; ++i) {
-        // TODO Bounding
         size_t localIndex { };
         auto const &prefixes { data[i].second };
         auto const &nextPrefixes { data[i + 1].second };
 
-        while (prefixes[localIndex] == nextPrefixes[localIndex]) {
+        std::string prefix, prefixOfNext;
+        while (localIndex < prefixes.size() && localIndex < nextPrefixes.size()) {
+          prefix = prefixes.at(localIndex);
+          prefixOfNext = nextPrefixes.at(localIndex);
+          if (prefix != prefixOfNext) break;
           ++localIndex;
         }
 
         auto resultIndex { std::max(globalIndex, localIndex) };
+        resultIndex = std::min(resultIndex, prefixes.size() - 1);
 
-        std::cerr << data[i].first << ": " << data[i].second[resultIndex] << std::endl;
+        auto result { prefixes[resultIndex] };
+
+        std::cerr << data[i].first << ": '" << result << '\'' << std::endl;
 
         globalIndex = localIndex;
       }
-      // TODO Last item.
+
+      auto const &lastPrefixes { data.back().second };
+      auto resultIndex = std::min(globalIndex, lastPrefixes.size() - 1);
+      auto result { lastPrefixes[resultIndex] };
+
+      std::cerr << data.back().first << ": " << result << std::endl;
+
     }
 
   private:
