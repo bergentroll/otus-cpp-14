@@ -85,8 +85,6 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  for (auto i: marks) cerr << i << std::endl;
-
   ThreadPool<decltype(&Mapper::run), Mapper*> mapThreads { mapThreadsNum };
   vector<Mapper> mappers { };
   mappers.reserve(mapThreadsNum);

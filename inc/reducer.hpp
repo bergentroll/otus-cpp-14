@@ -1,7 +1,9 @@
 #pragma once
 
 #include <fstream>
+#include <sstream>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include <iostream>
@@ -14,6 +16,10 @@ namespace otus {
       data(data) { }
 
     void run() const {
+      std::stringstream filename { };
+      filename << std::this_thread::get_id() << ".txt";
+      std::ofstream file { filename.str() };
+
       size_t globalIndex { };
 
       for (std::vector<ItemType>::size_type i { }; i < data.size() - 1; ++i) {
@@ -34,7 +40,7 @@ namespace otus {
 
         auto result { prefixes[resultIndex] };
 
-        std::cerr << data[i].first << ": '" << result << '\'' << std::endl;
+        file << result << '\n';
 
         globalIndex = localIndex;
       }
@@ -43,12 +49,10 @@ namespace otus {
       auto resultIndex = std::min(globalIndex, lastPrefixes.size() - 1);
       auto result { lastPrefixes[resultIndex] };
 
-      std::cerr << data.back().first << ": " << result << std::endl;
-
+      file << result << '\n';
     }
 
   private:
-    // TODO Reference.
-    std::vector<ItemType> data;
+    std::vector<ItemType> const &data;
   };
 }
