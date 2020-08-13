@@ -9,6 +9,7 @@
 #include "file_marker.hpp"
 #include "mapper.hpp"
 #include "reducer.hpp"
+#include "shuffler.hpp"
 #include "thread_pool.hpp"
 
 using namespace std;
@@ -99,26 +100,37 @@ int main(int argc, char **argv) {
 
   mapThreads.join();
 
-  //ThreadPool shuffleThreads { mapThreadsNum };
-
-  //// TODO run shuffle
-
-  //shuffleThreads.join();
-
-  /// TODO
-  reduceThreadsNum = mapThreadsNum;
-  ThreadPool<decltype(&Reducer::run), Reducer*> reduceThreads { reduceThreadsNum };
-  vector<Reducer> reducers { };
-  reducers.reserve(reduceThreadsNum);
-
-  /// TODO It seems it can be generalized.
-  for (auto &item: mappers) {
-    reducers.emplace_back(item.getResult());
-    Reducer &reducer { reducers.back() };
-    reduceThreads.run(&Reducer::run, &reducer);
+  // FIXME Eliminate copying.
+  Shuffler::InputType containers { };
+  containers.reserve(mapThreadsNum);
+  for (auto &i: mappers) {
+    containers.push_back(i.getResult());
   }
 
-  reduceThreads.join();
+  //// TODO Run parrallel.
+  Shuffler shuffler { containers };
+
+  shuffler();
+
+  auto const &cont { shuffler.getResult() };
+
+  for (auto i: cont) {
+    cout << i.first << "\n";
+  }
+
+  //reduceThreadsNum = mapThreadsNum;
+  //ThreadPool<decltype(&Reducer::run), Reducer*> reduceThreads { reduceThreadsNum };
+  //vector<Reducer> reducers { };
+  //reducers.reserve(reduceThreadsNum);
+
+  ///// TODO It seems it can be generalized.
+  //for (auto &item: mappers) {
+  //  reducers.emplace_back(item.getResult());
+  //  Reducer &reducer { reducers.back() };
+  //  reduceThreads.run(&Reducer::run, &reducer);
+  //}
+
+  //reduceThreads.join();
 
   return EXIT_SUCCESS;
 }
