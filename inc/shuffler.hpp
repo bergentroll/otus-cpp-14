@@ -8,33 +8,40 @@
 #include <iostream>
 
 namespace otus {
+  /// Shuffler merges multiple sorted containers preserving sorting.
   class Shuffler {
   public:
     using ItemType = std::pair<std::string, std::vector<std::string>>;
-    using InputType = std::vector<std::vector<ItemType>>;
+    using InputType = std::vector<std::vector<ItemType>*>;
 
     Shuffler(InputType &input):
     input(input) {
       size_t itemsAmount { };
-      for (auto const &container: input) {
-        itemsAmount += container.size();
-        iterators.push_back(container.cbegin());
+      for (auto containerPtr: input) {
+        itemsAmount += containerPtr->size();
+        iterators.push_back(containerPtr->begin());
       }
       result.reserve(itemsAmount);
     };
 
+    /** @brief Shuffle data from input containers to inner.
+     *
+     * After call date will be moved to internal containers. Input containers
+     * will be cleaned.
+     */
     void operator()() {
       while (true) {
         std::vector<std::pair<std::string, size_t>> currentValues { };
 
         for (size_t i { }; i < input.size(); ++i) {
           auto it { iterators[i] };
-          if (it != input[i].cend()) {
+          if (it != input[i]->end()) {
             currentValues.push_back(std::make_pair((*it).first, i));
           }
         }
 
         if (currentValues.size() == 0) {
+          for (auto containerPtr: input) containerPtr->clear();
           return;
         }
 
@@ -50,7 +57,7 @@ namespace otus {
         std::string secondMin;
 
         if (currentValues.size() == 1) {
-          secondMin = target.back().first;
+          secondMin = target->back().first;
         }
         else {
           secondMin = currentValues[1].first;
@@ -65,7 +72,7 @@ namespace otus {
   private:
     InputType &input;
     std::vector<ItemType> result { };
-    std::vector<std::vector<ItemType>::const_iterator> iterators { };
+    std::vector<std::vector<ItemType>::iterator> iterators { };
 
     void moveData(size_t targetContainerIndex, std::string secondMin) {
         auto const &target { input[targetContainerIndex] };
@@ -74,14 +81,14 @@ namespace otus {
         ItemType secondMinItem { secondMin, { } };
         auto end { std::upper_bound(
             it,
-            target.cend(),
+            target->end(),
             secondMinItem,
             [](auto const &item1, auto const &item2) {
               return item1.first < item2.first;
             })
         };
 
-        std::copy(it, end, std::back_inserter(result));
+        std::move(it, end, std::back_inserter(result));
 
         it = end;
     }

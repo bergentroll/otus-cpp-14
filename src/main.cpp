@@ -100,11 +100,10 @@ int main(int argc, char **argv) {
 
   mapThreads.join();
 
-  // FIXME Eliminate copying.
   Shuffler::InputType containers { };
   containers.reserve(mapThreadsNum);
   for (auto &i: mappers) {
-    containers.push_back(i.getResult());
+    containers.push_back(&i.getResult());
   }
 
   Shuffler shuffler { containers };
