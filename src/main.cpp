@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  ThreadPool<decltype(&Mapper::run), Mapper*> mapThreads { mapThreadsNum };
+  ThreadPool<decltype(&Mapper::operator()), Mapper*> mapThreads { mapThreadsNum };
   vector<Mapper> mappers { };
   mappers.reserve(mapThreadsNum);
 
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
   for (auto end: marks) {
     mappers.emplace_back(filename, begin, end);
     Mapper &mapper { mappers.back() };
-    mapThreads.run(&Mapper::run, &mapper);
+    mapThreads.run(&Mapper::operator(), &mapper);
     begin = end + PosType(1);
   }
 
@@ -113,23 +113,23 @@ int main(int argc, char **argv) {
 
   auto const &cont { shuffler.getResult() };
 
-  for (auto i: cont) {
-    cout << i.first << "\n";
-  }
-
-  //reduceThreadsNum = mapThreadsNum;
-  //ThreadPool<decltype(&Reducer::run), Reducer*> reduceThreads { reduceThreadsNum };
-  //vector<Reducer> reducers { };
-  //reducers.reserve(reduceThreadsNum);
-
-  ///// TODO It seems it can be generalized.
-  //for (auto &item: mappers) {
-  //  reducers.emplace_back(item.getResult());
-  //  Reducer &reducer { reducers.back() };
-  //  reduceThreads.run(&Reducer::run, &reducer);
+  //for (auto i: cont) {
+  //  cout << i.first << "\n";
   //}
 
-  //reduceThreads.join();
+  reduceThreadsNum = 1;
+  ThreadPool<decltype(&Reducer::operator()), Reducer*> reduceThreads { reduceThreadsNum };
+  vector<Reducer> reducers { };
+  reducers.reserve(reduceThreadsNum);
+
+  /// TODO It seems it can be generalized.
+  //for (auto &item: mappers) {
+    reducers.emplace_back(cont);
+    Reducer &reducer { reducers.back() };
+    reduceThreads.run(&Reducer::operator(), &reducer);
+  //}
+
+  reduceThreads.join();
 
   return EXIT_SUCCESS;
 }

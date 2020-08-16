@@ -15,7 +15,7 @@ namespace otus {
     Reducer (std::vector<ItemType> const &data):
       data(data) { }
 
-    void run() const {
+    void operator()() const {
       std::stringstream filename { };
       filename << std::this_thread::get_id() << ".txt";
       std::ofstream file { filename.str() };

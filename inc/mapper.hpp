@@ -23,7 +23,7 @@ namespace otus {
       }
     }
 
-    void run() {
+    void operator()() {
       std::sort(tokens.begin(), tokens.end());
 
       result.reserve(tokens.size());
