@@ -43,4 +43,6 @@ BOOST_AUTO_TEST_CASE(test2) {
       result.begin(), result.end(), expected.begin(), expected.end());
 }
 
+/// TODO Shuffler
+
 BOOST_AUTO_TEST_SUITE_END();

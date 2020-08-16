@@ -25,7 +25,6 @@ namespace otus {
 
     void operator()() {
       while (true) {
-        std::string secondMin;
         std::vector<std::pair<std::string, size_t>> currentValues { };
 
         for (size_t i { }; i < input.size(); ++i) {
@@ -48,6 +47,7 @@ namespace otus {
 
         auto targetContainerIndex { currentValues[0].second };
         auto const &target { input[targetContainerIndex] };
+        std::string secondMin;
 
         if (currentValues.size() == 1) {
           secondMin = target.back().first;
@@ -56,6 +56,19 @@ namespace otus {
           secondMin = currentValues[1].first;
         }
 
+        moveData(targetContainerIndex, secondMin);
+      }
+    }
+
+    std::vector<ItemType> getResult() { return result; }
+
+  private:
+    InputType &input;
+    std::vector<ItemType> result { };
+    std::vector<std::vector<ItemType>::const_iterator> iterators { };
+
+    void moveData(size_t targetContainerIndex, std::string secondMin) {
+        auto const &target { input[targetContainerIndex] };
         auto &it { iterators[targetContainerIndex] };
 
         ItemType secondMinItem { secondMin, { } };
@@ -71,14 +84,6 @@ namespace otus {
         std::copy(it, end, std::back_inserter(result));
 
         it = end;
-      }
     }
-
-    std::vector<ItemType> getResult() { return result; }
-
-  private:
-    InputType &input;
-    std::vector<ItemType> result { };
-    std::vector<std::vector<ItemType>::const_iterator> iterators { };
   };
 }
