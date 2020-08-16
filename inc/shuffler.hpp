@@ -23,7 +23,6 @@ namespace otus {
       result.reserve(itemsAmount);
     };
 
-    /// FIXME Still errors in sorting.
     void operator()() {
       while (true) {
         std::string secondMin;
@@ -37,7 +36,6 @@ namespace otus {
         }
 
         if (currentValues.size() == 0) {
-          std::cerr << "Nothing remains\n";
           return;
         }
 
@@ -53,7 +51,6 @@ namespace otus {
 
         if (currentValues.size() == 1) {
           secondMin = target.back().first;
-          std::cerr << "Last container\n";
         }
         else {
           secondMin = currentValues[1].first;
@@ -61,23 +58,19 @@ namespace otus {
 
         auto &it { iterators[targetContainerIndex] };
 
-        std::cerr << "containersRemain: " << currentValues.size() << ", secondMin: " << secondMin << '\n';
-        /// FIXME Use upper_bound for efficient.
-        auto end { std::find_if(
+        ItemType secondMinItem { secondMin, { } };
+        auto end { std::upper_bound(
             it,
             target.cend(),
-            [&secondMin](auto const &item) { std::cerr << item.first << ", "; return item.first > secondMin; }) };
-
-        std::cerr << "\n";
-        std::cerr << "End: " << ((end != target.cend())? (*end).first: "end") << "\n";
-
-        std::for_each(it, end, [](auto item) { std::cerr << item.first << ", "; });
-        std::cerr << std::endl;
+            secondMinItem,
+            [](auto const &item1, auto const &item2) {
+              return item1.first < item2.first;
+            })
+        };
 
         std::copy(it, end, std::back_inserter(result));
 
         it = end;
-        std::cerr << "::CYCLE::\n\n";
       }
     }
 
