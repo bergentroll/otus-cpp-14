@@ -16,6 +16,9 @@ namespace otus {
 
     Shuffler(InputType &input):
     input(input) {
+      currentValues.reserve(input.size());
+      iterators.reserve(input.size());
+
       size_t itemsAmount { };
       for (auto containerPtr: input) {
         itemsAmount += containerPtr->size();
@@ -31,8 +34,6 @@ namespace otus {
      */
     void operator()() {
       while (true) {
-        std::vector<std::pair<std::string, size_t>> currentValues { };
-
         for (size_t i { }; i < input.size(); ++i) {
           auto it { iterators[i] };
           if (it != input[i]->end()) {
@@ -63,6 +64,8 @@ namespace otus {
           secondMin = currentValues[1].first;
         }
 
+        currentValues.clear();
+
         moveData(targetContainerIndex, secondMin);
       }
     }
@@ -73,6 +76,7 @@ namespace otus {
     InputType &input;
     std::vector<ItemType> result { };
     std::vector<std::vector<ItemType>::iterator> iterators { };
+    std::vector<std::pair<std::string, size_t>> currentValues { };
 
     void moveData(size_t targetContainerIndex, std::string secondMin) {
         auto const &target { input[targetContainerIndex] };
