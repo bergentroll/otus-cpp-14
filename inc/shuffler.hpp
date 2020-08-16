@@ -12,10 +12,12 @@ namespace otus {
   class Shuffler {
   public:
     using ItemType = std::pair<std::string, std::vector<std::string>>;
-    using InputType = std::vector<std::vector<ItemType>*>;
+    using InputType = std::vector<std::vector<ItemType> *>;
+    using OutputType = std::vector<std::vector<ItemType>>;
 
-    Shuffler(InputType &input):
-    input(input) {
+    Shuffler(InputType &input, size_t resultContainersNumber):
+    input(input),
+    result(OutputType(resultContainersNumber)) {
       currentValues.reserve(input.size());
       iterators.reserve(input.size());
 
@@ -24,7 +26,15 @@ namespace otus {
         itemsAmount += containerPtr->size();
         iterators.push_back(containerPtr->begin());
       }
-      result.reserve(itemsAmount);
+
+      outputContainerSize = itemsAmount / resultContainersNumber;
+      if (itemsAmount % resultContainersNumber)
+        outputContainerSize += 1;
+
+      for (auto &container: result) {
+        /// TODO Add some room.
+        container.reserve(outputContainerSize);
+      }
     };
 
     /** @brief Shuffle data from input containers to inner.
@@ -70,15 +80,18 @@ namespace otus {
       }
     }
 
-    std::vector<ItemType> getResult() { return result; }
+    OutputType & getResult() { return result; }
 
   private:
     InputType &input;
-    std::vector<ItemType> result { };
+    OutputType result;
+    size_t outputContainerSize;
+    size_t currentOutputContainer { };
     std::vector<std::vector<ItemType>::iterator> iterators { };
     std::vector<std::pair<std::string, size_t>> currentValues { };
 
     void moveData(size_t targetContainerIndex, std::string secondMin) {
+        // TODO Clarify naming.
         auto const &target { input[targetContainerIndex] };
         auto &it { iterators[targetContainerIndex] };
 
@@ -92,9 +105,22 @@ namespace otus {
             })
         };
 
-        std::move(it, end, std::back_inserter(result));
+        while (it != end) {
+          auto &targetContainer { result[currentOutputContainer] };
+          targetContainer.push_back(std::move(*it));
+          std::string const &value { targetContainer.back().first };
 
-        it = end;
+          /// FIXME Ureliable aglorithm. Merge into one container, then split.
+          auto nextIt { std::next(it) };
+          if (
+              targetContainer.size() >= outputContainerSize &&
+              nextIt != end &&
+              (*nextIt).first != value) {
+            ++currentOutputContainer;
+          }
+
+          ++it;
+        }
     }
   };
 }

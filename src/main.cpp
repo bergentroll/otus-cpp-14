@@ -106,27 +106,31 @@ int main(int argc, char **argv) {
     containers.push_back(&i.getResult());
   }
 
-  Shuffler shuffler { containers };
+  Shuffler shuffler { containers, reduceThreadsNum };
 
   shuffler();
 
-  auto const &cont { shuffler.getResult() };
+  auto const &shuffledData { shuffler.getResult() };
 
-  //for (auto i: cont) {
-  //  cout << i.first << "\n";
+  //for (auto &i: shuffledData) {
+  //  for (auto &j: i) {
+  //  cout << j.first << "\n";
+  //  }
+  //  cout << endl;
   //}
 
-  reduceThreadsNum = 1;
+  //reduceThreadsNum = 1;
   ThreadPool<decltype(&Reducer::operator()), Reducer*> reduceThreads { reduceThreadsNum };
   vector<Reducer> reducers { };
   reducers.reserve(reduceThreadsNum);
 
   /// TODO It seems it can be generalized.
-  //for (auto &item: mappers) {
-    reducers.emplace_back(cont);
+  for (auto const &container: shuffledData) {
+    /// FIXME Eliminate copying.
+    reducers.emplace_back(container);
     Reducer &reducer { reducers.back() };
     reduceThreads.run(&Reducer::operator(), &reducer);
-  //}
+  }
 
   reduceThreads.join();
 

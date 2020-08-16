@@ -12,10 +12,16 @@ namespace otus {
   class Reducer {
   public:
     using ItemType = std::pair<std::string, std::vector<std::string>>;
+
+    /**
+     * data may be empty.
+     */
     Reducer (std::vector<ItemType> const &data):
-      data(data) { }
+    data(data) { }
 
     void operator()() const {
+      if (data.empty()) return;
+
       std::stringstream filename { };
       filename << std::this_thread::get_id() << ".txt";
       std::ofstream file { filename.str() };
