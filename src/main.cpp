@@ -107,7 +107,13 @@ int main(int argc, char **argv) {
     containers.push_back(i.getResult());
   }
 
-  //// TODO Run parrallel.
+  for (auto i: containers) {
+    for (auto j: i) {
+      std::cerr << j.first << ", ";
+    }
+    std::cerr << std::endl << std::endl;
+  }
+
   Shuffler shuffler { containers };
 
   shuffler();
