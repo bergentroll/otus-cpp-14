@@ -6,13 +6,14 @@
 
 #include "aliases.hpp"
 #include "file_marker.hpp"
+#include "shuffler.hpp"
 
 using namespace std;
 using namespace otus;
 
 BOOST_AUTO_TEST_SUITE(FileMarkerTest);
 
-BOOST_AUTO_TEST_CASE(test1) {
+BOOST_AUTO_TEST_CASE(file_marker_1) {
   vector<PosType> expected { 39, 69, 99 };
 
   string filename { "file1.txt" };
@@ -26,7 +27,7 @@ BOOST_AUTO_TEST_CASE(test1) {
       result.begin(), result.end(), expected.begin(), expected.end());
 }
 
-BOOST_AUTO_TEST_CASE(test2) {
+BOOST_AUTO_TEST_CASE(file_marker_2) {
   vector<PosType> expected {
     9, 19, 29, 39, 49, 59, 69, 79, 89, 99,
     99, 99, 99, 99, 99, 99, 99, 99, 99, 99
@@ -43,6 +44,25 @@ BOOST_AUTO_TEST_CASE(test2) {
       result.begin(), result.end(), expected.begin(), expected.end());
 }
 
-/// TODO Shuffler
+BOOST_AUTO_TEST_CASE(shuffler_1) {
+  vector<Shuffler::ItemType>
+    v1 { { "A", { } }, { "B", { } }, { "C", { } }, { "D", { } } },
+    v2 { { "E", { } }, { "F", { } }, { "G", { } } },
+    v3 { { "H", { } }, { "I", { } }, { "J", { } } },
+    v4 { { "K", { } }, { "L", { } }, { "M", { } } };
+
+  Shuffler::InputType input { &v1, &v2, &v3, &v4 };
+  Shuffler shuffler { input, 3 };
+
+  shuffler();
+
+  /// TODO
+  for (auto &i: shuffler.getResult()) {
+    for (auto &j: i) {
+      cerr << j.first << endl;
+    }
+    cerr << endl;
+  }
+}
 
 BOOST_AUTO_TEST_SUITE_END();
