@@ -90,15 +90,15 @@ namespace otus {
     std::vector<std::vector<ItemType>::iterator> iterators { };
     std::vector<std::pair<std::string, size_t>> currentValues { };
 
-    void moveData(size_t targetContainerIndex, std::string secondMin) {
+    void moveData(size_t sourceContainerIndex, std::string secondMin) {
         // TODO Clarify naming.
-        auto const &target { input[targetContainerIndex] };
-        auto &it { iterators[targetContainerIndex] };
+        auto const &sourceContainer{ input[sourceContainerIndex] };
+        auto &it { iterators[sourceContainerIndex] };
 
         ItemType secondMinItem { secondMin, { } };
         auto end { std::upper_bound(
             it,
-            target->end(),
+            sourceContainer->end(),
             secondMinItem,
             [](auto const &item1, auto const &item2) {
               return item1.first < item2.first;
