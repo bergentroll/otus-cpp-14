@@ -110,13 +110,13 @@ namespace otus {
           targetContainer.push_back(std::move(*it));
           std::string const &value { targetContainer.back().first };
 
-          /// FIXME Ureliable aglorithm. Merge into one container, then split.
-          auto nextIt { std::next(it) };
-          if (
-              targetContainer.size() >= outputContainerSize &&
-              nextIt != end &&
-              (*nextIt).first != value) {
-            ++currentOutputContainer;
+          if (targetContainer.size() >= outputContainerSize) {
+            auto nextIt { std::next(it) };
+            std::string nextValue;
+            if (nextIt != end) nextValue = nextIt->first;
+            else nextValue = secondMin;
+
+            if (nextValue != value) ++currentOutputContainer;
           }
 
           ++it;
