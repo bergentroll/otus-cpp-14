@@ -11,6 +11,20 @@
 using namespace std;
 using namespace otus;
 
+namespace std {
+  ostream & operator<<(
+      ostream & stream,
+      vector<Shuffler::ItemType> const & collection) {
+    stream << "[ ";
+    for (auto it { collection.cbegin() }; it != collection.cend(); ++it) {
+      stream << it->first;
+      if (next(it) != collection.cend()) stream << ", ";
+    }
+    stream << " ]";
+    return stream;
+  }
+}
+
 BOOST_AUTO_TEST_SUITE(FileMarkerTest);
 
 BOOST_AUTO_TEST_CASE(file_marker_1) {
@@ -24,7 +38,7 @@ BOOST_AUTO_TEST_CASE(file_marker_1) {
   FileMarker marker { filename };
   auto result { marker.mark(3) };
   BOOST_CHECK_EQUAL_COLLECTIONS(
-      result.begin(), result.end(), expected.begin(), expected.end());
+      result.cbegin(), result.cend(), expected.cbegin(), expected.cend());
 }
 
 BOOST_AUTO_TEST_CASE(file_marker_2) {
@@ -44,25 +58,28 @@ BOOST_AUTO_TEST_CASE(file_marker_2) {
       result.begin(), result.end(), expected.begin(), expected.end());
 }
 
-BOOST_AUTO_TEST_CASE(shuffler_1) {
+BOOST_AUTO_TEST_CASE(shuffler_steady) {
   vector<Shuffler::ItemType>
     v1 { { "A", { } }, { "B", { } }, { "C", { } }, { "D", { } } },
     v2 { { "E", { } }, { "F", { } }, { "G", { } } },
     v3 { { "H", { } }, { "I", { } }, { "J", { } } },
     v4 { { "K", { } }, { "L", { } }, { "M", { } } };
 
+  Shuffler::OutputType expected {
+    { { "A", { } }, { "B", { } }, { "C", { } }, { "D", { } }, { "E", { } } },
+    { { "F", { } }, { "G", { } }, { "H", { } }, { "I", { } }, { "J", { } } },
+    { { "K", { } }, { "L", { } }, { "M", { } } }
+  };
+
   Shuffler::InputType input { &v1, &v2, &v3, &v4 };
   Shuffler shuffler { input, 3 };
 
   shuffler();
 
-  /// TODO
-  for (auto &i: shuffler.getResult()) {
-    for (auto &j: i) {
-      cerr << j.first << endl;
-    }
-    cerr << endl;
-  }
+  auto &result = shuffler.getResult();
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(
+      result.cbegin(), result.cend(), expected.cbegin(), expected.cend());
 }
 
 BOOST_AUTO_TEST_SUITE_END();
