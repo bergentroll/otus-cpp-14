@@ -82,4 +82,54 @@ BOOST_AUTO_TEST_CASE(shuffler_steady) {
       result.cbegin(), result.cend(), expected.cbegin(), expected.cend());
 }
 
+BOOST_AUTO_TEST_CASE(shuffler_twins_in_different_containers) {
+  vector<Shuffler::ItemType>
+    v1 { { "A", { } }, { "B", { } }, { "C", { } }, { "D", { } } },
+    v2 { { "E", { } }, { "F", { } }, { "G", { } } },
+    v3 { { "H", { } }, { "I", { } }, { "J", { } } },
+    v4 { { "J", { } }, { "J", { } }, { "M", { } } };
+
+  Shuffler::OutputType expected {
+    { { "A", { } }, { "B", { } }, { "C", { } }, { "D", { } }, { "E", { } } },
+    { { "F", { } }, { "G", { } }, { "H", { } }, { "I", { } }, { "J", { } },
+      { "J", { } }, { "J", { } } },
+    { { "M", { } } }
+  };
+
+  Shuffler::InputType input { &v1, &v2, &v3, &v4 };
+  Shuffler shuffler { input, 3 };
+
+  shuffler();
+
+  auto &result = shuffler.getResult();
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(
+      result.cbegin(), result.cend(), expected.cbegin(), expected.cend());
+}
+
+BOOST_AUTO_TEST_CASE(shuffler_twins_in_one_container) {
+  vector<Shuffler::ItemType>
+    v1 { { "A", { } }, { "B", { } }, { "C", { } }, { "D", { } } },
+    v2 { { "E", { } }, { "E", { } }, { "E", { } } },
+    v3 { { "H", { } }, { "I", { } }, { "J", { } } },
+    v4 { { "K", { } }, { "L", { } }, { "M", { } } };
+
+  Shuffler::OutputType expected {
+    { { "A", { } }, { "B", { } }, { "C", { } }, { "D", { } }, { "E", { } },
+      { "E", { } }, { "E", { } } },
+    { { "H", { } }, { "I", { } }, { "J", { } }, { "K", { } }, { "L", { } } },
+    { { "M", { } } }
+  };
+
+  Shuffler::InputType input { &v1, &v2, &v3, &v4 };
+  Shuffler shuffler { input, 3 };
+
+  shuffler();
+
+  auto &result = shuffler.getResult();
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(
+      result.cbegin(), result.cend(), expected.cbegin(), expected.cend());
+}
+
 BOOST_AUTO_TEST_SUITE_END();
