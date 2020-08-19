@@ -6,7 +6,7 @@
 #include <utility>
 #include <vector>
 
-#include "aliases.hpp"
+#include "utilities.hpp"
 
 namespace otus {
   class Mapper {
@@ -19,12 +19,16 @@ namespace otus {
         PosType end,
         size_t size=0):
     file(filename) {
-      // TODO Errors handling.
+      if (!file.is_open())
+        throw FailedToReadFile("failed to open file \"" + filename + '"');
+
       file.seekg(begin);
       std::string line;
       tokens.reserve(size);
       while (file.tellg() <= end && std::getline(file, line)) {
         tokens.push_back(line);
+        if (file.fail())throw  FailedToReadFile(
+            "fail while reading file \"" + filename + '"');
       }
     }
 

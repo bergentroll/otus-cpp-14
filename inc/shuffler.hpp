@@ -5,8 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include <iostream>
-
 namespace otus {
   /// Shuffler merges multiple sorted containers preserving sorting.
   class Shuffler {

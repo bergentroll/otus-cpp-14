@@ -4,9 +4,9 @@
 #include <fstream>
 #include <vector>
 
-#include "aliases.hpp"
 #include "file_marker.hpp"
 #include "shuffler.hpp"
+#include "utilities.hpp"
 
 using namespace std;
 using namespace otus;

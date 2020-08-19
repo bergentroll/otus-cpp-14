@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
     FileMarker marker { filename };
     marks = marker.mark(mapThreadsNum);
   }
-  catch (FileMarker::FailedToReadFile const &e) {
+  catch (FailedToReadFile const &e) {
     std::cerr << "Error: " << e.what() << endl;
     return EXIT_FAILURE;
   }
@@ -92,7 +92,13 @@ int main(int argc, char **argv) {
   PosType begin { 0 };
   for (auto const & endPair: marks) {
     auto [end, size] { endPair };
-    mappers.emplace_back(filename, begin, end, size);
+    try {
+      mappers.emplace_back(filename, begin, end, size);
+    }
+    catch (FailedToReadFile const &e) {
+      std::cerr << "Error: " << e.what() << endl;
+      return EXIT_FAILURE;
+    }
     Mapper &mapper { mappers.back() };
     mapThreads.run(&Mapper::operator(), &mapper);
     begin = end + PosType(1);
