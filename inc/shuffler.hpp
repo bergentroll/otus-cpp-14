@@ -31,9 +31,9 @@ namespace otus {
       if (itemsAmount % resultContainersNumber)
         outputContainerSize += 1;
 
+      // Room needed when we have duplicates to put them in one container.
       for (auto &container: result) {
-        /// TODO Add some room.
-        container.reserve(outputContainerSize);
+        container.reserve(outputContainerSize + roomSize);
       }
     };
 
@@ -83,6 +83,7 @@ namespace otus {
     OutputType & getResult() { return result; }
 
   private:
+    size_t const roomSize { 10 };
     InputType &input;
     OutputType result;
     size_t outputContainerSize;
@@ -91,7 +92,6 @@ namespace otus {
     std::vector<std::pair<std::string, size_t>> currentValues { };
 
     void moveData(size_t sourceContainerIndex, std::string secondMin) {
-        // TODO Clarify naming.
         auto const &sourceContainer{ input[sourceContainerIndex] };
         auto &it { iterators[sourceContainerIndex] };
 

@@ -112,15 +112,8 @@ int main(int argc, char **argv) {
 
   auto const &shuffledData { shuffler.getResult() };
 
-  //for (auto &i: shuffledData) {
-  //  for (auto &j: i) {
-  //  cout << j.first << "\n";
-  //  }
-  //  cout << endl;
-  //}
-
-  //reduceThreadsNum = 1;
-  ThreadPool<decltype(&Reducer::operator()), Reducer*> reduceThreads { reduceThreadsNum };
+  ThreadPool<decltype(&Reducer::operator()), Reducer*>
+    reduceThreads {reduceThreadsNum };
   vector<Reducer> reducers { };
   reducers.reserve(reduceThreadsNum);
 
