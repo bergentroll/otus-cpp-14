@@ -123,9 +123,7 @@ int main(int argc, char **argv) {
   vector<Reducer> reducers { };
   reducers.reserve(reduceThreadsNum);
 
-  /// TODO It seems it can be generalized.
   for (auto const &container: shuffledData) {
-    /// FIXME Eliminate copying.
     reducers.emplace_back(container);
     Reducer &reducer { reducers.back() };
     reduceThreads.run(&Reducer::operator(), &reducer);
