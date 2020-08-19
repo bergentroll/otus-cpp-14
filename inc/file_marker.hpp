@@ -11,6 +11,8 @@
 namespace otus {
   class FileMarker {
   public:
+    using OutputType = std::vector<std::pair<PosType, size_t>>;
+
     class FailedToReadFile: public std::runtime_error {
     public:
       FailedToReadFile(std::string const &message):
@@ -38,25 +40,31 @@ namespace otus {
      *
      * TODO Vector of pairs
      */
-    std::vector<PosType> mark(size_t blocksNum) {
-      std::vector<PosType> result { };
+    OutputType mark(size_t blocksNum) {
+      OutputType result { };
       result.reserve(blocksNum);
 
       auto blockSize { eols.size() / blocksNum };
       auto remainder { eols.size() % blocksNum };
 
       size_t shift { 0 };
+      size_t prevMarkIndex { 0 };
 
-      for (size_t i { }; i < blocksNum; ++i) {
-        // To spread remains to blocks.
+      for (size_t i { 0 }; i < blocksNum; ++i) {
+        // To spread remains on blocks.
         if (remainder > 0) {
           --remainder;
           ++shift;
         }
 
-        auto mark { eols[(i + 1) * blockSize + shift - 1] };
+        auto markIndex { (i + 1) * blockSize + shift - 1 };
+        auto mark { eols[markIndex] };
 
-        result.push_back(mark);
+        result.push_back(std::make_pair(
+              mark,
+              markIndex - prevMarkIndex + (i == 0)));
+
+        prevMarkIndex = markIndex;
       }
 
       return result;

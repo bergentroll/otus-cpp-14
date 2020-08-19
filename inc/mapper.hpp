@@ -13,11 +13,16 @@ namespace otus {
   public:
     using MappingResult = std::pair<std::string, std::vector<std::string>>;
 
-    Mapper(std::string const &filename, PosType begin, PosType end):
+    Mapper(
+        std::string const &filename,
+        PosType begin,
+        PosType end,
+        size_t size=0):
     file(filename) {
       // TODO Errors handling.
       file.seekg(begin);
       std::string line;
+      tokens.reserve(size);
       while (file.tellg() <= end && std::getline(file, line)) {
         tokens.push_back(line);
       }
@@ -36,7 +41,6 @@ namespace otus {
 
   private:
     std::ifstream file;
-    // TODO Reserve.
     std::vector<std::string> tokens { };
     std::vector<MappingResult> result { };
 

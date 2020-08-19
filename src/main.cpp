@@ -74,8 +74,7 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  std::vector<PosType> marks { };
-  marks.reserve(mapThreadsNum);
+  FileMarker::OutputType marks { };
 
   try {
     FileMarker marker { filename };
@@ -91,8 +90,9 @@ int main(int argc, char **argv) {
   mappers.reserve(mapThreadsNum);
 
   PosType begin { 0 };
-  for (auto end: marks) {
-    mappers.emplace_back(filename, begin, end);
+  for (auto const & endPair: marks) {
+    auto [end, size] { endPair };
+    mappers.emplace_back(filename, begin, end, size);
     Mapper &mapper { mappers.back() };
     mapThreads.run(&Mapper::operator(), &mapper);
     begin = end + PosType(1);

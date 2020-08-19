@@ -23,12 +23,17 @@ namespace std {
     stream << " ]";
     return stream;
   }
+
+  ostream & operator<<(ostream & stream, pair<PosType, size_t> const & item) {
+    stream << "[ " << item.first << ", " << item.second << " ]";
+    return stream;
+  }
 }
 
 BOOST_AUTO_TEST_SUITE(FileMarkerTest);
 
 BOOST_AUTO_TEST_CASE(file_marker_1) {
-  vector<PosType> expected { 39, 69, 99 };
+  FileMarker::OutputType expected { { 39 , 4 }, { 69, 3 }, { 99, 3 } };
 
   string filename { "file1.txt" };
   ofstream file { filename };
@@ -37,17 +42,20 @@ BOOST_AUTO_TEST_CASE(file_marker_1) {
 
   FileMarker marker { filename };
   auto result { marker.mark(3) };
+
   BOOST_CHECK_EQUAL_COLLECTIONS(
       result.cbegin(), result.cend(), expected.cbegin(), expected.cend());
 }
 
 BOOST_AUTO_TEST_CASE(file_marker_2) {
-  vector<PosType> expected {
-    9, 19, 29, 39, 49, 59, 69, 79, 89, 99,
-    99, 99, 99, 99, 99, 99, 99, 99, 99, 99
+  FileMarker::OutputType expected {
+    {  9, 1 }, { 19, 1 }, { 29, 1 }, { 39, 1 }, { 49, 1 },
+    { 59, 1 }, { 69, 1 }, { 79, 1 }, { 89, 1 }, { 99, 1 },
+    { 99, 0 }, { 99, 0 }, { 99, 0 }, { 99, 0 }, { 99, 0 },
+    { 99, 0 }, { 99, 0 }, { 99, 0 }, { 99, 0 }, { 99, 0 }
   };
 
-  string filename { "file1.txt" };
+  string filename { "file2.txt" };
   ofstream file { filename };
   for (int i { }; i < 10; ++i) file << "012345678\n";
   file.close();
@@ -57,6 +65,10 @@ BOOST_AUTO_TEST_CASE(file_marker_2) {
   BOOST_CHECK_EQUAL_COLLECTIONS(
       result.begin(), result.end(), expected.begin(), expected.end());
 }
+
+BOOST_AUTO_TEST_SUITE_END();
+
+BOOST_AUTO_TEST_SUITE(ShufflerTest);
 
 BOOST_AUTO_TEST_CASE(shuffler_steady) {
   vector<Shuffler::ItemType>
