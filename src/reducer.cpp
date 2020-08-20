@@ -28,7 +28,7 @@ void Reducer::operator()() const {
     auto resultIndex { max(globalIndex, localIndex) };
     resultIndex = min(resultIndex, prefixes.size() - 1);
 
-    auto result { prefixes[resultIndex] };
+    auto result { prefixes.size()? prefixes[resultIndex]: "" };
 
     file << result << '\n';
 
