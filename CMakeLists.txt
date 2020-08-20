@@ -28,14 +28,16 @@ find_package(Threads REQUIRED)
 
 ### Main targets ##############################################################
 
-#add_library(
-#  ${CMAKE_PROJECT_NAME}-obj
-#  #STATIC ${SRC_PATH}/.cpp)
-#  )
-#target_link_libraries(
-#  ${CMAKE_PROJECT_NAME}-obj
-#  ${CMAKE_THREAD_LIBS_INIT}
-#  stdc++fs)
+add_library(
+  ${CMAKE_PROJECT_NAME}-obj
+  STATIC
+  ${SRC_PATH}/file_maker.cpp
+  ${SRC_PATH}/mapper.cpp
+  ${SRC_PATH}/reducer.cpp
+  ${SRC_PATH}/shuffler.cpp)
+target_link_libraries(
+  ${CMAKE_PROJECT_NAME}-obj
+  ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(
   ${CMAKE_PROJECT_NAME}
@@ -43,7 +45,7 @@ add_executable(
 target_link_libraries(
   ${CMAKE_PROJECT_NAME}
   ${CMAKE_THREAD_LIBS_INIT}
-#  ${CMAKE_PROJECT_NAME}-obj
+  ${CMAKE_PROJECT_NAME}-obj
   ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
 ### Tests #####################################################################
@@ -53,7 +55,7 @@ if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   target_link_libraries(
     test-suite
     PRIVATE
-    #${CMAKE_PROJECT_NAME}-obj
+    ${CMAKE_PROJECT_NAME}-obj
     Boost::unit_test_framework)
   add_test(test-suite test-suite)
 else()
