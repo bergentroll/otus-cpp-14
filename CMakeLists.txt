@@ -32,12 +32,13 @@ add_library(
   ${CMAKE_PROJECT_NAME}-obj
   STATIC
   ${SRC_PATH}/file_maker.cpp
-  ${SRC_PATH}/mapper.cpp
-  ${SRC_PATH}/reducer.cpp
   ${SRC_PATH}/shuffler.cpp)
-target_link_libraries(
-  ${CMAKE_PROJECT_NAME}-obj
-  ${CMAKE_THREAD_LIBS_INIT})
+
+add_library(
+  ${CMAKE_PROJECT_NAME}-mapper-reducer
+  SHARED
+  ${SRC_PATH}/mapper.cpp
+  ${SRC_PATH}/reducer.cpp)
 
 add_executable(
   ${CMAKE_PROJECT_NAME}
@@ -46,6 +47,7 @@ target_link_libraries(
   ${CMAKE_PROJECT_NAME}
   ${CMAKE_THREAD_LIBS_INIT}
   ${CMAKE_PROJECT_NAME}-obj
+  ${CMAKE_PROJECT_NAME}-mapper-reducer
   ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
 ### Tests #####################################################################
@@ -68,6 +70,7 @@ enable_testing()
 ### Packing ###################################################################
 
 install(TARGETS ${CMAKE_PROJECT_NAME} RUNTIME DESTINATION bin)
+install(TARGETS ${CMAKE_PROJECT_NAME}-mapper-reducer LIBRARY DESTINATION lib)
 
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_CONTACT bergentroll@insiberia.net)
