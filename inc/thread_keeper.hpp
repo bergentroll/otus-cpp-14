@@ -5,9 +5,9 @@
 
 namespace otus {
   template <typename Function, typename... Args>
-  class ThreadPool {
+  class ThreadKeeper {
   public:
-    ThreadPool(size_t size) { pool.reserve(size); }
+    ThreadKeeper(size_t size) { pool.reserve(size); }
 
     void run(Function &&func, Args &&...args) {
       pool.emplace_back(func, args...);

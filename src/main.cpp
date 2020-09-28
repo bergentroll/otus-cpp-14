@@ -10,7 +10,7 @@
 #include "mapper.hpp"
 #include "reducer.hpp"
 #include "shuffler.hpp"
-#include "thread_pool.hpp"
+#include "thread_keeper.hpp"
 
 using namespace std;
 using namespace otus;
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  ThreadPool<decltype(&Mapper::operator()), Mapper*> mapThreads { mapThreadsNum };
+  ThreadKeeper<decltype(&Mapper::operator()), Mapper*> mapThreads { mapThreadsNum };
   vector<Mapper> mappers { };
   mappers.reserve(mapThreadsNum);
 
@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
 
   auto const &shuffledData { shuffler.getResult() };
 
-  ThreadPool<decltype(&Reducer::operator()), Reducer*>
+  ThreadKeeper<decltype(&Reducer::operator()), Reducer*>
     reduceThreads {reduceThreadsNum };
   vector<Reducer> reducers { };
   reducers.reserve(reduceThreadsNum);
